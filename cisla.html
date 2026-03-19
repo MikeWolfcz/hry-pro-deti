@@ -74,9 +74,41 @@ function digitSVG(n, color) {
   </svg>`;
 }
 
-function playCorrect() {}
-function playWrong()   {}
-function playWin()     {}
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+function getACtx() {
+  if (!actx) actx = new AudioCtx();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+// Odemkni AudioContext při prvním dotyku/kliku
+function unlockAudio() {
+  getACtx();
+  document.removeEventListener('touchstart', unlockAudio);
+  document.removeEventListener('mousedown', unlockAudio);
+}
+document.addEventListener('touchstart', unlockAudio, {once:true});
+document.addEventListener('mousedown', unlockAudio, {once:true});
+
+function playTones(freqs, type, vol) {
+  try {
+    const ctx = getACtx();
+    if (ctx.state !== 'running') return;
+    const t = ctx.currentTime;
+    freqs.forEach(([freq, delay, dur]) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = type; o.frequency.value = freq;
+      g.gain.setValueAtTime(0, t+delay);
+      g.gain.linearRampToValueAtTime(vol, t+delay+0.04);
+      g.gain.linearRampToValueAtTime(0, t+delay+dur);
+      o.start(t+delay); o.stop(t+delay+dur+0.05);
+    });
+  } catch(e) {}
+}
+function playCorrect() { playTones([[523,0,.2],[659,.08,.2],[784,.16,.2],[1046,.24,.2]],'sine',.18); }
+function playWrong()   { playTones([[220,0,.2],[185,.13,.2]],'sawtooth',.22); }
+function playWin()     { playTones([[523,0,.32],[659,.1,.32],[784,.2,.32],[880,.3,.32],[1046,.4,.32],[1318,.5,.32]],'sine',.22); }
 function showFlash(type) {
   const el = document.getElementById('flash');
   el.textContent = type === 'correct' ? '✓' : type === 'wrong' ? '✗' : '🏆';
