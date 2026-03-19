@@ -1,0 +1,14 @@
+{
+  "name": "Hry pro děti",
+  "short_name": "Hry",
+  "description": "Vzdělávací hry pro děti — barvy a čísla",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f9fa",
+  "theme_color": "#f8f9fa",
+  "icons": [
+    { "src": "icon.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
