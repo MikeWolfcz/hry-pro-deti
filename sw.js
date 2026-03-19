@@ -1,10 +1,11 @@
-const CACHE = 'hry-v1';
+const CACHE = 'hry-v2';
 const FILES = [
-  '/index.html',
-  '/barvy.html',
-  '/cisla.html',
-  '/manifest.json',
-  '/icon.png'
+  './',
+  './index.html',
+  './barvy.html',
+  './cisla.html',
+  './manifest.json',
+  './icon.png'
 ];
 
 self.addEventListener('install', e => {
