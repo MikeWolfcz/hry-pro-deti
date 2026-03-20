@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Tlapková patrola — Barvy</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; touch-action:manipulation; user-select:none; -webkit-user-select:none; margin:0; padding:0; }
+
+body { font-family:'Nunito',sans-serif; background:#C8EAFB; min-height:100vh; overflow-x:hidden; }
+
+#sky {
+  position:fixed; inset:0; z-index:0;
+  background:linear-gradient(180deg,#5BC8F5 0%,#A8DFF7 40%,#D4EFFC 70%,#E8F8FF 100%);
+}
+
+.cloud {
+  position:absolute; background:#fff; border-radius:60px; opacity:0.92;
+  animation:drift linear infinite;
+}
+.cloud::before,.cloud::after{content:'';position:absolute;background:#fff;border-radius:50%;}
+.cl1{width:100px;height:32px;top:6%;animation-duration:30s;}
+.cl1::before{width:46px;height:46px;top:-22px;left:14px;}
+.cl1::after{width:32px;height:32px;top:-14px;left:50px;}
+.cl2{width:70px;height:22px;top:22%;animation-duration:24s;animation-delay:-9s;}
+.cl2::before{width:32px;height:32px;top:-16px;left:10px;}
+.cl2::after{width:22px;height:22px;top:-10px;left:34px;}
+.cl3{width:130px;height:36px;top:4%;animation-duration:38s;animation-delay:-18s;}
+.cl3::before{width:58px;height:58px;top:-26px;left:18px;}
+.cl3::after{width:40px;height:40px;top:-18px;left:62px;}
+@keyframes drift{from{left:-160px}to{left:110%}}
+
+#sun {
+  position:fixed;top:14px;right:18px;z-index:3;font-size:44px;
+  animation:sunpulse 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 12px rgba(255,220,0,0.7));
+}
+@keyframes sunpulse{0%,100%{transform:scale(1) rotate(-3deg)}50%{transform:scale(1.1) rotate(3deg)}}
+
+#grass {
+  position:fixed;bottom:0;left:0;right:0;height:64px;z-index:2;
+  background:linear-gradient(180deg,#5DBB3A,#3D9A22);
+  border-radius:60% 60% 0 0 / 24px 24px 0 0;
+}
+
+/* Plovoucí tlapky na pozadí */
+.float-paw {
+  position:fixed; font-size:32px; opacity:0.08; pointer-events:none; z-index:1;
+  animation:floatpaw ease-in-out infinite;
+}
+@keyframes floatpaw{0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-16px) rotate(10deg)}}
+
+/* HEADER */
+#header {
+  position:relative; z-index:10;
+  background:linear-gradient(135deg,#E8311A 0%,#C41A05 100%);
+  padding:10px 14px 8px;
+  box-shadow:0 5px 0 #9B1B0A,0 8px 20px rgba(0,0,0,0.25);
+}
+#title-row {
+  display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px;
+}
+#title-row h1 {
+  font-family:'Fredoka One',cursive;font-size:19px;color:#fff;
+  text-shadow:2px 2px 0 #9B1B0A,0 0 20px rgba(255,200,0,0.4);
+  letter-spacing:0.5px;
+}
+.hstar{font-size:22px;animation:startwinkle 1.5s ease-in-out infinite alternate;}
+.hstar:nth-child(3){animation-delay:0.4s;}
+@keyframes startwinkle{from{transform:scale(1)}to{transform:scale(1.25) rotate(10deg)}}
+
+#level-row{display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:13px;font-weight:800;}
+#progress-wrap{flex:1;height:12px;background:rgba(0,0,0,0.25);border-radius:10px;margin:0 8px;overflow:hidden;border:2px solid rgba(255,255,255,0.25);}
+#progress-bar{height:100%;background:linear-gradient(90deg,#F9C700,#FFE566);border-radius:10px;transition:width 0.5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 10px rgba(249,199,0,0.8);width:0%;}
+
+/* GAME */
+#game{position:relative;z-index:10;max-width:700px;margin:0 auto;padding:10px 12px 80px;}
+
+#msg {
+  text-align:center;font-size:16px;font-weight:900;
+  color:#0D4F7A;min-height:36px;margin-bottom:12px;
+  font-family:'Fredoka One',cursive;
+  background:rgba(255,255,255,0.75);border-radius:24px;padding:7px 16px;
+  box-shadow:0 3px 12px rgba(0,0,0,0.1);
+  transition:all 0.2s;
+}
+
+/* SLOTS */
+#slots-area{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:14px;min-height:92px;}
+.slot {
+  width:78px;height:78px;border-radius:50%;
+  background:rgba(255,255,255,0.45);
+  border:4px dashed rgba(255,255,255,0.85);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  transition:transform 0.15s,box-shadow 0.15s;
+  box-shadow:0 4px 12px rgba(0,0,0,0.12);
+}
+.slot.over{transform:scale(1.16);box-shadow:0 8px 24px rgba(0,0,0,0.22);border-style:solid;}
+.slot.filled{border-style:solid;border-color:rgba(255,255,255,0.5) !important;}
+.slot .ghost-circle{width:100%;height:100%;border-radius:50%;position:absolute;top:0;left:0;transition:opacity 0.2s;}
+.slot.filled .ghost-circle{display:none;}
+.slot.over .ghost-circle{opacity:1 !important;}
+
+/* Emoji hint v slotu */
+.slot .slot-emoji {
+  position:absolute;font-size:30px;
+  opacity:0.45;pointer-events:none;z-index:1;
+  transition:opacity 0.2s;
+  animation:slotbounce 2s ease-in-out infinite;
+}
+.slot.over .slot-emoji{opacity:0.7;}
+.slot.filled .slot-emoji{display:none;}
+@keyframes slotbounce{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+
+/* Emoji ve vyplněném slotu */
+.slot .filled-emoji{
+  font-size:38px;display:none;
+  animation:filledbounce 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+.slot.filled .filled-emoji{display:block;}
+@keyframes filledbounce{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0deg)}}
+
+/* CARDS */
+#cards-area{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;min-height:92px;}
+.card {
+  width:78px;height:78px;border-radius:50%;
+  border:4px solid rgba(255,255,255,0.55);
+  cursor:grab;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0px;
+  transition:transform 0.15s,opacity 0.2s,box-shadow 0.15s;
+  box-shadow:0 5px 16px rgba(0,0,0,0.28);
+  animation:cardbounce 0.45s cubic-bezier(.34,1.56,.64,1) both;
+  position:relative;
+}
+.card .card-emoji{font-size:34px;line-height:1;pointer-events:none;}
+.card .card-name{font-size:8px;font-weight:900;color:#fff;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.4);letter-spacing:0.3px;margin-top:-2px;}
+@keyframes cardbounce{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.card:active{cursor:grabbing;transform:scale(1.2) rotate(5deg);}
+.card.dragging{opacity:0.45;transform:scale(1.1);}
+.card.placed{opacity:0;pointer-events:none;width:0;height:0;margin:0;padding:0;overflow:hidden;}
+.card.wrong-shake{animation:shake 0.35s;}
+@keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}100%{transform:translateX(0)}}
+
+/* FLASH */
+#flash{
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(0.5);
+  font-size:110px;line-height:1;
+  opacity:0;transition:opacity 0.12s,transform 0.12s;
+  pointer-events:none;z-index:9998;
+  filter:drop-shadow(0 6px 20px rgba(0,0,0,0.25));
+}
+
+/* RESTART */
+#btn-row{text-align:center;margin-top:14px;}
+#restart-btn{
+  font-family:'Fredoka One',cursive;font-size:17px;
+  padding:11px 30px;
+  background:linear-gradient(135deg,#E8311A,#C41A05);
+  color:#fff;border:none;border-radius:30px;
+  box-shadow:0 5px 0 #8B1000,0 8px 20px rgba(232,49,26,0.4);
+  cursor:pointer;letter-spacing:0.5px;
+  transition:transform 0.1s,box-shadow 0.1s;
+}
+#restart-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #8B1000;}
+
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+/* ===== RESPONSIVE + CENTROVÁNÍ ===== */
+html, body {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  overflow-x: hidden;
+}
+
+/* Detekce malých telefonů (< 380px) */
+@media (max-width: 380px) {
+  .slot, .card { width: 58px !important; height: 58px !important; }
+  #slots-area, #cards-area { gap: 7px !important; }
+  #msg { font-size: 13px !important; }
+}
+
+/* Střední telefony (381–480px) */
+@media (min-width: 381px) and (max-width: 480px) {
+  .slot, .card { width: 66px !important; height: 66px !important; }
+  #slots-area, #cards-area { gap: 9px !important; }
+}
+
+/* Tablety a větší (> 600px) — větší karty */
+@media (min-width: 600px) {
+  .slot, .card { width: 88px !important; height: 88px !important; }
+  .card .card-emoji { font-size: 42px !important; }
+  #slots-area, #cards-area { gap: 14px !important; }
+  #msg { font-size: 18px !important; }
+}
+
+/* iPad a větší (> 768px) */
+@media (min-width: 768px) {
+  .slot, .card { width: 100px !important; height: 100px !important; }
+  .card .card-emoji { font-size: 50px !important; }
+  #slots-area, #cards-area { gap: 16px !important; }
+  #msg { font-size: 20px !important; }
+  #game, #header { max-width: 680px !important; width: 100% !important; }
+}
+
+/* Landscape orientace */
+@media (orientation: landscape) and (max-height: 500px) {
+  .slot, .card { width: 54px !important; height: 54px !important; }
+  #slots-area { margin-bottom: 8px !important; }
+  #msg { margin-bottom: 6px !important; min-height: 22px !important; }
+}
+
+/* Centrování wrapperu */
+#game { width: 100%; }
+</style>
+</head>
+<body>
+
+<div id="sky">
+  <div class="cloud cl1" style="left:-160px"></div>
+  <div class="cloud cl2" style="left:-80px"></div>
+  <div class="cloud cl3" style="left:-160px"></div>
+</div>
+
+<div id="sun">☀️</div>
+<div id="grass"></div>
+
+<!-- Plovoucí tlapky -->
+<div class="float-paw" style="top:35%;left:3%;animation-duration:4s;">🐾</div>
+<div class="float-paw" style="top:60%;right:3%;animation-duration:5s;animation-delay:-2s;font-size:24px;">🐾</div>
+<div class="float-paw" style="top:75%;left:48%;animation-duration:6s;animation-delay:-1s;font-size:20px;">🐾</div>
+<div class="float-paw" style="top:45%;right:8%;animation-duration:4.5s;animation-delay:-3s;font-size:28px;">🦴</div>
+
+<div id="header">
+  <div id="title-row">
+    <span class="hstar">⭐</span>
+    <span style="font-size:22px">🐾</span>
+    <h1>TLAPKOVÁ PATROLA</h1>
+    <span style="font-size:22px">🐾</span>
+    <span class="hstar">⭐</span>
+  </div>
+  <div id="level-row">
+    <span>🚨 Mise <span id="lv">1</span>/11</span>
+    <div id="progress-wrap"><div id="progress-bar"></div></div>
+    <span>🦴 <span id="sc">0</span></span>
+  </div>
+</div>
+
+<div id="game">
+  <div id="msg"></div>
+  <div id="slots-area"></div>
+  <div id="cards-area"></div>
+  <div id="btn-row">
+    <button id="restart-btn">🐾 Nová mise!</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+<div id="flash"></div>
+
+<script>
+
+// Detekce rozlišení a přizpůsobení
+(function() {
+  var w = window.innerWidth, h = window.innerHeight;
+  document.documentElement.setAttribute('data-w', w < 380 ? 'xs' : w < 480 ? 'sm' : w < 600 ? 'md' : w < 768 ? 'lg' : 'xl');
+  window.addEventListener('resize', function() {
+    var nw = window.innerWidth;
+    document.documentElement.setAttribute('data-w', nw < 380 ? 'xs' : nw < 480 ? 'sm' : nw < 600 ? 'md' : nw < 768 ? 'lg' : 'xl');
+  });
+})();
+
+// Každá postava má unikátní emoji, barvu, jméno a hlášku
+const DOGS = [
+  { name:'Chase',    bg:'#1565C0', border:'#0D3D73', emoji:'🚔', slot:'🚔', msg:'Policejní Chase hlídkuje!' },
+  { name:'Marshall', bg:'#E63946', border:'#9B1B26', emoji:'🚒', slot:'🚒', msg:'Hasič Marshall spěchá!' },
+  { name:'Skye',     bg:'#FF69B4', border:'#C2185B', emoji:'🚁', slot:'🚁', msg:'Pilotka Skye letí!' },
+  { name:'Rocky',    bg:'#2E7D32', border:'#1B4F20', emoji:'♻️', slot:'♻️', msg:'Šikovný Rocky recykluje!' },
+  { name:'Zuma',     bg:'#FF6F00', border:'#BF4600', emoji:'🚤', slot:'🚤', msg:'Záchranář Zuma plave!' },
+  { name:'Rubble',   bg:'#F9C80E', border:'#B5900A', emoji:'🚜', slot:'🚜', msg:'Bouřlivák Rubble staví!' },
+  { name:'Everest',  bg:'#7B1FA2', border:'#4A0D63', emoji:'🏔️', slot:'🏔️', msg:'Sněžná Everest lyžuje!' },
+  { name:'Tracker',  bg:'#00ACC1', border:'#006978', emoji:'🚙', slot:'🚙', msg:'Průzkumník Tracker jede!' },
+  { name:'Tuck',     bg:'#78909C', border:'#37474F', emoji:'🤖', slot:'🤖', msg:'Technik Tuck vynalézá!' },
+  { name:'Ella',     bg:'#37474F', border:'#212121', emoji:'🦅', slot:'🦅', msg:'Odvážná Ella létá!' },
+];
+
+function hexRgba(hex,a){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// Audio
+const AudioCtx=window.AudioContext||window.webkitAudioContext;
+let actx=null;
+function getACtx(){if(!actx)actx=new AudioCtx();if(actx.state==='suspended')actx.resume();return actx;}
+function unlockAudio(){getACtx();}
+document.addEventListener('touchstart',unlockAudio,{once:true});
+document.addEventListener('mousedown',unlockAudio,{once:true});
+function playTones(freqs,type,vol){
+  try{
+    const ctx=getACtx();if(ctx.state!=='running')return;
+    const t=ctx.currentTime;
+    freqs.forEach(([freq,delay,dur])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type=type;o.frequency.value=freq;
+      g.gain.setValueAtTime(0,t+delay);
+      g.gain.linearRampToValueAtTime(vol,t+delay+0.04);
+      g.gain.linearRampToValueAtTime(0,t+delay+dur);
+      o.start(t+delay);o.stop(t+delay+dur+0.05);
+    });
+  }catch(e){}
+}
+function playCorrect(){playTones([[523,0,.2],[659,.08,.2],[784,.16,.2],[1046,.24,.2]],'sine',.18);}
+function playWrong()  {playTones([[220,0,.2],[185,.13,.2]],'sawtooth',.22);}
+function playWin()    {playTones([[523,0,.32],[659,.1,.32],[784,.2,.32],[880,.3,.32],[1046,.4,.32],[1318,.5,.32]],'sine',.22);}
+
+function showFlash(type){
+  const el=document.getElementById('flash');
+  el.textContent=type==='correct'?'✅':type==='wrong'?'❌':'🏆';
+  el.style.opacity='1';el.style.transform='translate(-50%,-50%) scale(1.15)';
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{el.style.opacity='0';el.style.transform='translate(-50%,-50%) scale(0.5)';},900);
+}
+
+let level=1,score=0,dragCard=null,touchCard=null,ghostEl=null;
+function shuffle(arr){return arr.sort(()=>Math.random()-0.5);}
+
+function updateMsg(){
+  const m=document.getElementById('msg');
+  if(level<=10){
+    const d=DOGS[level-1];
+    m.innerHTML=`${d.emoji} <span style="color:${d.bg};-webkit-text-stroke:0.5px ${d.border}">${d.name}</span> — ${d.msg} Najdi správné místo! 🐾`;
+  } else {
+    m.innerHTML='🚨 FINÁLNÍ MISE — všichni psi na svá místa! 🐾🎉';
+  }
+}
+
+function setMsg(html){
+  document.getElementById('msg').innerHTML=html;
+  setTimeout(()=>updateMsg(),1600);
+}
+
+function buildLevel(){
+  document.getElementById('slots-area').innerHTML='';
+  document.getElementById('cards-area').innerHTML='';
+  document.getElementById('lv').textContent=level;
+  document.getElementById('progress-bar').style.width=((level-1)/11*100)+'%';
+  updateMsg();
+
+  const nums=level<=10
+    ?Array.from({length:level},(_,i)=>i+1)
+    :Array.from({length:10},(_,i)=>i+1);
+  const shuffled=shuffle([...nums]);
+
+  nums.forEach(n=>{
+    const d=DOGS[n-1];
+    const slot=document.createElement('div');
+    slot.className='slot';slot.dataset.num=n;
+    slot.style.borderColor=hexRgba(d.border,0.7);
+
+    const ghost=document.createElement('div');
+    ghost.className='ghost-circle';
+    ghost.style.background=hexRgba(d.bg,0.40);
+    slot.appendChild(ghost);
+
+    // Emoji hint — velký a jasný
+    const hint=document.createElement('span');
+    hint.className='slot-emoji';
+    hint.textContent=d.slot;
+    slot.appendChild(hint);
+
+    // Placeholder pro vyplněný stav
+    const filled=document.createElement('span');
+    filled.className='filled-emoji';
+    filled.textContent=d.emoji;
+    slot.appendChild(filled);
+
+    slot.addEventListener('dragover',e=>{e.preventDefault();slot.classList.add('over');});
+    slot.addEventListener('dragleave',()=>slot.classList.remove('over'));
+    slot.addEventListener('drop',e=>{e.preventDefault();handleDrop(slot);});
+    document.getElementById('slots-area').appendChild(slot);
+  });
+
+  shuffled.forEach((n,i)=>{
+    const d=DOGS[n-1];
+    const card=document.createElement('div');
+    card.className='card';card.dataset.num=n;
+    card.draggable=true;
+    card.style.background=`radial-gradient(circle at 35% 35%, ${d.bg}ee, ${d.border})`;
+    card.style.borderColor=hexRgba(d.border,0.6);
+    card.style.animationDelay=(i*0.07)+'s';
+    card.innerHTML=`<span class="card-emoji">${d.emoji}</span><span class="card-name">${d.name.toUpperCase()}</span>`;
+
+    card.addEventListener('dragstart',()=>{unlockAudio();dragCard=card;card.classList.add('dragging');});
+    card.addEventListener('dragend',()=>{card.classList.remove('dragging');dragCard=null;});
+    card.addEventListener('touchstart',onTouchStart,{passive:false});
+    card.addEventListener('touchmove',onTouchMove,{passive:false});
+    card.addEventListener('touchend',onTouchEnd,{passive:false});
+    document.getElementById('cards-area').appendChild(card);
+  });
+}
+
+function handleDrop(slot){slot.classList.remove('over');if(!dragCard)return;checkPlace(dragCard,slot);}
+
+function checkPlace(card,slot){
+  slot.classList.remove('over');
+  if(card.dataset.num===slot.dataset.num){
+    const n=parseInt(card.dataset.num),d=DOGS[n-1];
+    slot.classList.add('filled');
+    slot.style.background=`radial-gradient(circle at 35% 35%, ${d.bg}dd, ${d.border})`;
+    slot.style.borderColor=d.border;
+    card.classList.add('placed');
+    score++;
+    document.getElementById('sc').textContent=score;
+    playCorrect();showFlash('correct');
+    if(!document.querySelector('.card:not(.placed)'))setTimeout(nextLevel,600);
+    else setMsg(`${d.emoji} <strong style="color:${d.bg};-webkit-text-stroke:0.4px ${d.border}">${d.name}</strong> je na místě! Skvělá práce! 🎉`);
+  } else {
+    playWrong();showFlash('wrong');
+    card.classList.remove('wrong-shake');
+    void card.offsetWidth;
+    card.classList.add('wrong-shake');
+    setTimeout(()=>card.classList.remove('wrong-shake'),400);
+    setMsg('❌ Tohle místo není správné! Zkus znovu! 🐾');
+  }
+}
+
+function nextLevel(){
+  if(level>=11){
+    document.getElementById('progress-bar').style.width='100%';
+    document.getElementById('msg').innerHTML='🏆 Mise splněna! Tlapková patrola zachránila den! 🐾🎉🚨';
+    playWin();showFlash('win');launchConfetti();return;
+  }
+  level++;buildLevel();
+}
+
+function onTouchStart(e){
+  e.preventDefault();unlockAudio();
+  touchCard=e.currentTarget;
+  const t=e.touches[0];
+  ghostEl=document.createElement('div');
+  const d=DOGS[parseInt(touchCard.dataset.num)-1];
+  ghostEl.style.cssText=`position:fixed;width:${touchCard.offsetWidth}px;height:${touchCard.offsetHeight}px;border-radius:50%;opacity:0.9;z-index:9999;pointer-events:none;background:radial-gradient(circle at 35% 35%,${d.bg}ee,${d.border});border:4px solid ${hexRgba(d.border,0.6)};display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,0.35);left:${t.clientX-touchCard.offsetWidth/2}px;top:${t.clientY-touchCard.offsetHeight/2}px;`;
+  ghostEl.innerHTML=touchCard.innerHTML;
+  document.body.appendChild(ghostEl);
+  touchCard.classList.add('dragging');
+}
+
+function onTouchMove(e){
+  e.preventDefault();if(!ghostEl)return;
+  const t=e.touches[0];
+  ghostEl.style.left=(t.clientX-touchCard.offsetWidth/2)+'px';
+  ghostEl.style.top=(t.clientY-touchCard.offsetHeight/2)+'px';
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('over'));
+  const slot=document.elementsFromPoint(t.clientX,t.clientY).find(el=>el.classList&&el.classList.contains('slot'));
+  if(slot)slot.classList.add('over');
+}
+
+function onTouchEnd(e){
+  e.preventDefault();unlockAudio();
+  if(ghostEl){ghostEl.remove();ghostEl=null;}
+  if(!touchCard)return;
+  touchCard.classList.remove('dragging');
+  const t=e.changedTouches[0];
+  const slot=document.elementsFromPoint(t.clientX,t.clientY).find(el=>el.classList&&el.classList.contains('slot'));
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('over'));
+  if(slot)checkPlace(touchCard,slot);
+  touchCard=null;
+}
+
+document.getElementById('restart-btn').addEventListener('click',()=>{
+  level=1;score=0;document.getElementById('sc').textContent=0;buildLevel();
+});
+
+function launchConfetti(){
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const emojis=['🐾','🦴','⭐','🚒','🚔','🚁','🚤','🚜'];
+  const cols=DOGS.map(d=>d.bg);
+  const pieces=Array.from({length:180},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*-canvas.height,
+    r:Math.random()*9+4,
+    c:cols[Math.floor(Math.random()*cols.length)],
+    s:Math.random()*4+1.5,
+    a:Math.random()*Math.PI*2,
+    spin:Math.random()*0.22-0.11,
+  }));
+  let frame=0;
+  (function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);
+      ctx.fillStyle=p.c;
+      ctx.beginPath();ctx.arc(0,0,p.r,0,Math.PI*2);ctx.fill();
+      ctx.restore();p.y+=p.s;p.a+=p.spin;
+    });
+    if(++frame<300)requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  })();
+}
+
+buildLevel();
+</script>
+</body>
+</html>
