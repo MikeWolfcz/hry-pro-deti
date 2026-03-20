@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hry pro děti">
+<meta name="theme-color" content="#f8f9fa">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Hry pro děti</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+h1 { font-size: 28px; font-weight: 800; color: #333; margin-bottom: 8px; text-align: center; }
+p { font-size: 15px; color: #888; margin-bottom: 40px; text-align: center; }
+.games { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 360px; }
+a {
+  display: flex; align-items: center; gap: 18px;
+  background: #fff; border-radius: 18px;
+  padding: 20px 24px;
+  text-decoration: none; color: #333;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 2px solid transparent;
+  transition: transform 0.15s, box-shadow 0.15s;
+  -webkit-user-select: none;
+}
+a:active { transform: scale(0.97); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.icon { font-size: 48px; line-height: 1; }
+.info h2 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+.info span { font-size: 13px; color: #999; }
+.a1 { border-color: #E63946; }
+.a2 { border-color: #1565C0; }
+.a3 { border-color: #E8311A; }
+</style>
+</head>
+<body>
+<h1>🎮 Hry pro děti</h1>
+<p>Vyber hru a začni hrát!</p>
+<div class="games">
+  <a href="barvy.html" class="a1">
+    <div class="icon">🎨</div>
+    <div class="info">
+      <h2>Barvy</h2>
+      <span>Přetáhni barvu na správné místo</span>
+    </div>
+  </a>
+  <a href="tlapkova.html" class="a3">
+    <div class="icon">🐾</div>
+    <div class="info">
+      <h2>Tlapková patrola</h2>
+      <span>Přetáhni psíka na správné místo</span>
+    </div>
+  </a>
+  <a href="cisla.html" class="a2">
+    <div class="icon">🔢</div>
+    <div class="info">
+      <h2>Čísla</h2>
+      <span>Přetáhni číslo na správné místo</span>
+    </div>
+  </a>
+</div>
+</body>
+</html>
