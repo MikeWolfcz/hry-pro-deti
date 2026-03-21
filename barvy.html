@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#f8f9fa">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Barvy</title>
 <style>
 * { box-sizing: border-box; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
@@ -20,10 +20,10 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f8f9fa; }
 #msg { min-height: 28px; text-align: center; font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px; transition: color 0.3s; }
 #progress-bar-wrap { height: 6px; border-radius: 4px; background: #e0e0e0; margin-bottom: 10px; overflow: hidden; }
 #progress-bar { height: 100%; border-radius: 4px; background: #4caf50; transition: width 0.4s; width: 0%; }
-#slots-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 22px; min-height: 106px; }
-#cards-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; min-height: 106px; }
+#slots-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-bottom: 18px; min-height: 81px; }
+#cards-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 11px; min-height: 81px; }
 .slot {
-  width: 86px; height: 86px; border-radius: 50%;
+  width: 65px; height: 65px; border-radius: 50%;
   background: #e8e8e8;
   display: flex; align-items: center; justify-content: center;
   position: relative;
@@ -40,8 +40,8 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f8f9fa; }
 .slot.filled .ghost-circle { display: none; }
 .slot.over .ghost-circle { opacity: 1 !important; }
 .card {
-  width: 86px; height: 86px; border-radius: 50%;
-  border: 5px solid transparent;
+  width: 65px; height: 65px; border-radius: 50%;
+  border: 4px solid transparent;
   cursor: grab;
   transition: transform 0.15s, opacity 0.2s, box-shadow 0.15s;
   box-shadow: 0 3px 10px rgba(0,0,0,0.18);
@@ -60,41 +60,35 @@ button:hover { background: #f0f0f0; }
 html { display: flex; justify-content: center; }
 body { width: 100%; max-width: 720px; }
 @media (max-width: 380px) {
-  .slot, .card { width: 67px !important; height: 67px !important; }
+  .slot, .card { width: 50px !important; height: 50px !important; }
   #slots-area, #cards-area { gap: 7px !important; }
   #msg { font-size: 13px !important; }
 }
 @media (min-width: 600px) {
-  .slot, .card { width: 106px !important; height: 106px !important; }
+  .slot, .card { width: 79px !important; height: 79px !important; }
   #slots-area, #cards-area { gap: 14px !important; }
 }
 @media (min-width: 768px) {
-  .slot, .card { width: 120px !important; height: 120px !important; }
+  .slot, .card { width: 90px !important; height: 90px !important; }
   #slots-area, #cards-area { gap: 16px !important; }
   #game { max-width: 680px !important; margin: 0 auto !important; }
 }
 @media (orientation: landscape) and (max-height: 500px) {
-  .slot, .card { width: 62px !important; height: 62px !important; }
+  .slot, .card { width: 47px !important; height: 47px !important; }
   #slots-area { margin-bottom: 8px !important; }
 }
 
-/* ===== CENTROVÁNÍ NA STŘED ===== */
-html, body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#game {
-  width: 100%;
-  max-width: 720px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#slots-area, #cards-area, #header, #btn-row {
-  width: 100%;
-  justify-content: center;
+/* iOS Standalone — skryj stavovou lištu Safari, respektuj safe area */
+@supports (-webkit-touch-callout: none) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  #header {
+    padding-top: max(10px, env(safe-area-inset-top));
+  }
 }
 </style>
 </head>
@@ -299,9 +293,19 @@ function nextLevel() {
   level++; buildLevel();
 }
 
+function cleanupTouch(){
+  if(ghostEl){ghostEl.remove();ghostEl=null;}
+  if(touchCard){touchCard.classList.remove('dragging');touchCard=null;}
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('over'));
+  document.querySelectorAll('.card.dragging').forEach(c=>c.classList.remove('dragging'));
+}
+document.addEventListener('touchcancel', cleanupTouch);
+window.addEventListener('blur', cleanupTouch);
 function onTouchStart(e) {
   e.preventDefault();
+  cleanupTouch();
   touchCard = e.currentTarget;
+  if(touchCard.classList.contains('placed')) return;
   const t = e.touches[0];
   ghostEl = document.createElement('div');
   ghostEl.style.cssText = `position:fixed;width:${touchCard.offsetWidth}px;height:${touchCard.offsetHeight}px;border-radius:50%;opacity:0.85;z-index:9999;pointer-events:none;background:${touchCard.style.background};border:4px solid ${touchCard.style.borderColor};box-shadow:0 4px 14px rgba(0,0,0,0.25);left:${t.clientX-touchCard.offsetWidth/2}px;top:${t.clientY-touchCard.offsetHeight/2}px;`;
@@ -311,7 +315,7 @@ function onTouchStart(e) {
 
 function onTouchMove(e) {
   e.preventDefault();
-  if (!ghostEl) return;
+  if (!ghostEl||!touchCard) return;
   const t = e.touches[0];
   ghostEl.style.left = (t.clientX - touchCard.offsetWidth/2)+'px';
   ghostEl.style.top  = (t.clientY - touchCard.offsetHeight/2)+'px';

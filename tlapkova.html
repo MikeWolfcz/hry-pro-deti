@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Tlapková patrola — Barvy</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 <style>
@@ -87,11 +87,11 @@ body { font-family:'Nunito',sans-serif; background:#C8EAFB; min-height:100vh; ov
 }
 
 /* SLOTS */
-#slots-area{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:16px;min-height:110px;}
+#slots-area{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-bottom:12px;min-height:83px;}
 .slot {
-  width:94px;height:94px;border-radius:50%;
+  width:70px;height:70px;border-radius:50%;
   background:rgba(255,255,255,0.45);
-  border:5px dashed rgba(255,255,255,0.85);
+  border:4px dashed rgba(255,255,255,0.85);
   display:flex;align-items:center;justify-content:center;
   position:relative;
   transition:transform 0.15s,box-shadow 0.15s;
@@ -105,7 +105,7 @@ body { font-family:'Nunito',sans-serif; background:#C8EAFB; min-height:100vh; ov
 
 /* Emoji hint v slotu */
 .slot .slot-emoji {
-  position:absolute;font-size:36px;
+  position:absolute;font-size:27px;
   opacity:0.45;pointer-events:none;z-index:1;
   transition:opacity 0.2s;
   animation:slotbounce 2s ease-in-out infinite;
@@ -116,17 +116,17 @@ body { font-family:'Nunito',sans-serif; background:#C8EAFB; min-height:100vh; ov
 
 /* Emoji ve vyplněném slotu */
 .slot .filled-emoji{
-  font-size:46px;display:none;
+  font-size:34px;display:none;
   animation:filledbounce 0.4s cubic-bezier(.34,1.56,.64,1);
 }
 .slot.filled .filled-emoji{display:block;}
 @keyframes filledbounce{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0deg)}}
 
 /* CARDS */
-#cards-area{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;min-height:110px;}
+#cards-area{display:flex;flex-wrap:wrap;justify-content:center;gap:11px;min-height:83px;}
 .card {
-  width:78px;height:78px;border-radius:50%;
-  border:5px solid rgba(255,255,255,0.55);
+  width:70px;height:70px;border-radius:50%;
+  border:4px solid rgba(255,255,255,0.55);
   cursor:grab;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0px;
@@ -135,8 +135,8 @@ body { font-family:'Nunito',sans-serif; background:#C8EAFB; min-height:100vh; ov
   animation:cardbounce 0.45s cubic-bezier(.34,1.56,.64,1) both;
   position:relative;
 }
-.card .card-emoji{font-size:41px;line-height:1;pointer-events:none;}
-.card .card-name{font-size:10px;font-weight:900;color:#fff;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.4);letter-spacing:0.3px;margin-top:-2px;}
+.card .card-emoji{font-size:31px;line-height:1;pointer-events:none;}
+.card .card-name{font-size:7px;font-weight:900;color:#fff;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.4);letter-spacing:0.3px;margin-top:-2px;}
 @keyframes cardbounce{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 .card:active{cursor:grabbing;transform:scale(1.2) rotate(5deg);}
 .card.dragging{opacity:0.45;transform:scale(1.1);}
@@ -180,29 +180,29 @@ html, body {
 
 /* Detekce malých telefonů (< 380px) */
 @media (max-width: 380px) {
-  .slot, .card { width: 70px !important; height: 70px !important; }
+  .slot, .card { width: 52px !important; height: 52px !important; }
   #slots-area, #cards-area { gap: 7px !important; }
   #msg { font-size: 13px !important; }
 }
 
 /* Střední telefony (381–480px) */
 @media (min-width: 381px) and (max-width: 480px) {
-  .slot, .card { width: 80px !important; height: 80px !important; }
+  .slot, .card { width: 59px !important; height: 59px !important; }
   #slots-area, #cards-area { gap: 9px !important; }
 }
 
 /* Tablety a větší (> 600px) — větší karty */
 @media (min-width: 600px) {
-  .slot, .card { width: 106px !important; height: 106px !important; }
-  .card .card-emoji { font-size: 60px !important; }
+  .slot, .card { width: 79px !important; height: 79px !important; }
+  .card .card-emoji { font-size: 38px !important; }
   #slots-area, #cards-area { gap: 14px !important; }
   #msg { font-size: 18px !important; }
 }
 
 /* iPad a větší (> 768px) */
 @media (min-width: 768px) {
-  .slot, .card { width: 120px !important; height: 120px !important; }
-  .card .card-emoji { font-size: 50px !important; }
+  .slot, .card { width: 90px !important; height: 90px !important; }
+  .card .card-emoji { font-size: 45px !important; }
   #slots-area, #cards-area { gap: 16px !important; }
   #msg { font-size: 20px !important; }
   #game, #header { max-width: 680px !important; width: 100% !important; }
@@ -210,7 +210,7 @@ html, body {
 
 /* Landscape orientace */
 @media (orientation: landscape) and (max-height: 500px) {
-  .slot, .card { width: 65px !important; height: 65px !important; }
+  .slot, .card { width: 49px !important; height: 49px !important; }
   #slots-area { margin-bottom: 8px !important; }
   #msg { margin-bottom: 6px !important; min-height: 22px !important; }
 }
@@ -218,29 +218,18 @@ html, body {
 /* Centrování wrapperu */
 #game { width: 100%; }
 
-/* ===== CENTROVÁNÍ NA STŘED ===== */
-html, body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* iOS Standalone — skryj stavovou lištu Safari, respektuj safe area */
+@supports (-webkit-touch-callout: none) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  #header {
+    padding-top: max(10px, env(safe-area-inset-top));
+  }
 }
-#header {
-  width: 100%;
-  max-width: 720px;
-}
-#game {
-  width: 100%;
-  max-width: 720px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#slots-area, #cards-area {
-  width: 100%;
-  justify-content: center;
-}
-
 </style>
 </head>
 <body>
@@ -464,9 +453,18 @@ function nextLevel(){
   level++;buildLevel();
 }
 
+function cleanupTouch(){
+  if(ghostEl){ghostEl.remove();ghostEl=null;}
+  if(touchCard){touchCard.classList.remove('dragging');touchCard=null;}
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('over'));
+  document.querySelectorAll('.card.dragging').forEach(c=>c.classList.remove('dragging'));
+}
+
 function onTouchStart(e){
   e.preventDefault();unlockAudio();
+  cleanupTouch(); // safety reset pokud předchozí touch neskončil čistě
   touchCard=e.currentTarget;
+  if(touchCard.classList.contains('placed')) return; // ignoruj již umístěné karty
   const t=e.touches[0];
   ghostEl=document.createElement('div');
   const d=DOGS[parseInt(touchCard.dataset.num)-1];
@@ -477,7 +475,7 @@ function onTouchStart(e){
 }
 
 function onTouchMove(e){
-  e.preventDefault();if(!ghostEl)return;
+  e.preventDefault();if(!ghostEl||!touchCard)return;
   const t=e.touches[0];
   ghostEl.style.left=(t.clientX-touchCard.offsetWidth/2)+'px';
   ghostEl.style.top=(t.clientY-touchCard.offsetHeight/2)+'px';
@@ -497,6 +495,10 @@ function onTouchEnd(e){
   if(slot)checkPlace(touchCard,slot);
   touchCard=null;
 }
+
+// Přerušení touch (notifikace, přepnutí appu, atd.)
+document.addEventListener('touchcancel', cleanupTouch);
+window.addEventListener('blur', cleanupTouch);
 
 document.getElementById('restart-btn').addEventListener('click',()=>{
   level=1;score=0;document.getElementById('sc').textContent=0;buildLevel();
