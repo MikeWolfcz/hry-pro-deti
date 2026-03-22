@@ -258,7 +258,7 @@ html, body {
     <span class="hstar">⭐</span>
   </div>
   <div id="level-row">
-    <span>🚨 Mise <span id="lv">1</span>/11</span>
+    <span>🚨 Mise <span id="lv">1</span>/10</span>
     <div id="progress-wrap"><div id="progress-bar"></div></div>
     <span>🦴 <span id="sc">0</span></span>
   </div>
@@ -338,7 +338,7 @@ function showFlash(type){
   el.textContent=type==='correct'?'✅':type==='wrong'?'❌':'🏆';
   el.style.opacity='1';el.style.transform='translate(-50%,-50%) scale(1.15)';
   clearTimeout(el._t);
-  el._t=setTimeout(()=>{el.style.opacity='0';el.style.transform='translate(-50%,-50%) scale(0.5)';},900);
+  el._t=setTimeout(()=>{el.style.opacity='0';el.style.transform='translate(-50%,-50%) scale(0.5)';},type==='win'?4000:900);
 }
 
 let level=1,score=0,dragCard=null,touchCard=null,ghostEl=null;
@@ -363,7 +363,7 @@ function buildLevel(){
   document.getElementById('slots-area').innerHTML='';
   document.getElementById('cards-area').innerHTML='';
   document.getElementById('lv').textContent=level;
-  document.getElementById('progress-bar').style.width=((level-1)/11*100)+'%';
+  document.getElementById('progress-bar').style.width=((level-1)/10*100)+'%';
   updateMsg();
 
   const nums=level<=10
@@ -371,7 +371,7 @@ function buildLevel(){
     :Array.from({length:10},(_,i)=>i+1);
   const shuffled=shuffle([...nums]);
 
-  nums.forEach(n=>{
+  shuffle([...nums]).forEach(n=>{
     const d=DOGS[n-1];
     const slot=document.createElement('div');
     slot.className='slot';slot.dataset.num=n;
@@ -445,7 +445,7 @@ function checkPlace(card,slot){
 }
 
 function nextLevel(){
-  if(level>=11){
+  if(level>=10){
     document.getElementById('progress-bar').style.width='100%';
     document.getElementById('msg').innerHTML='🏆 Mise splněna! Tlapková patrola zachránila den! 🐾🎉🚨';
     playWin();showFlash('win');launchConfetti();return;

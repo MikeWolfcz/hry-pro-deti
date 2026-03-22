@@ -78,7 +78,7 @@ body { width: 100%; max-width: 720px; }
 <body>
 <div id="game">
   <div id="header">
-    <div id="level-info">Úroveň <span id="lv">1</span> / 11</div>
+    <div id="level-info">Úroveň <span id="lv">1</span> / 10</div>
     <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
     <div id="score-info">Správně: <span id="sc">0</span></div>
   </div>
@@ -165,7 +165,7 @@ function showFlash(type) {
   el._t = setTimeout(() => {
     el.style.opacity = '0';
     el.style.transform = 'translate(-50%,-50%) scale(0.8)';
-  }, 900);
+  }, type === 'win' ? 4000 : 900);
 }
 
 let level = 1, score = 0, dragCard = null, touchCard = null, ghostEl = null;
@@ -176,7 +176,7 @@ function updateMsg() {
   const m = document.getElementById('msg');
   m.style.color = '#333';
   if (level <= 10) m.innerHTML = 'Přetáhni číslo <strong>' + level + '</strong> na správné místo!';
-  else m.innerHTML = 'Finální výzva — seřaď všechna čísla <strong>1–10</strong>!';
+  
 }
 
 function setMsg(html, color) {
@@ -189,7 +189,7 @@ function buildLevel() {
   document.getElementById('slots-area').innerHTML = '';
   document.getElementById('cards-area').innerHTML = '';
   document.getElementById('lv').textContent = level;
-  document.getElementById('progress-bar').style.width = ((level-1)/11*100) + '%';
+  document.getElementById('progress-bar').style.width = ((level-1)/10*100) + '%';
   updateMsg();
 
   const nums = level <= 10
@@ -197,7 +197,7 @@ function buildLevel() {
     : Array.from({length: 10}, (_, i) => i+1);
   const shuffled = shuffle([...nums]);
 
-  nums.forEach(n => {
+  shuffle([...nums]).forEach(n => {
     const c = COLORS[n-1];
     const slot = document.createElement('div');
     slot.className = 'slot';
@@ -261,7 +261,7 @@ function checkPlace(card, slot) {
 }
 
 function nextLevel() {
-  if (level >= 11) {
+  if (level >= 10) {
     document.getElementById('progress-bar').style.width = '100%';
     document.getElementById('msg').innerHTML = '🏆 Imperátor je hrdý! Všechna čísla pokořena!';
     document.getElementById('msg').style.color = '#e67e22';
