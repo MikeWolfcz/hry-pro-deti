@@ -1,4 +1,4 @@
-const CACHE = 'hry-v5';
+const CACHE = 'hry-v6';
 const FILES = [
   './',
   './index.html',
@@ -20,6 +20,15 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./index.html')))
+    caches.match(e.request).then(r => {
+      if (r) return r;
+      return fetch(e.request).then(resp => {
+        if (resp && resp.status === 200) {
+          const clone = resp.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return resp;
+      }).catch(() => caches.match('./index.html'));
+    })
   );
 });
