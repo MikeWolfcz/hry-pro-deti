@@ -1,13 +1,6 @@
-const CACHE = 'hry-v4';
-const FILES = [
-  './',
-  './index.html',
-  './barvy.html',
-  './cisla.html',
-  './tlapkova.html',
-  './manifest.json',
-  './icon.png'
-];
+const CACHE = 'hry-v5';
+const FILES = ['./', './index.html', './manifest.json', './icon.png'];
+
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
   self.skipWaiting();
