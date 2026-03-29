@@ -206,7 +206,7 @@ function showFlash(type) {
   }, type === 'win' ? 4000 : 900);
 }
 
-let level=1, score=0, dragCard=null, touchCard=null, ghostEl=null;
+let level=1, score=0, dragCard=null, touchCard=null, ghostEl=null, confettiAnimId=null;
 
 function shuffle(arr) { return arr.sort(()=>Math.random()-0.5); }
 
@@ -353,10 +353,12 @@ function onTouchEnd(e) {
 }
 
 document.getElementById('restart-btn').addEventListener('click', () => {
+  if (confettiAnimId) { cancelAnimationFrame(confettiAnimId); confettiAnimId = null; }
   level=1; score=0; document.getElementById('sc').textContent=0; buildLevel();
 });
 
 function launchConfetti() {
+  if (confettiAnimId) { cancelAnimationFrame(confettiAnimId); confettiAnimId = null; }
   const canvas = document.getElementById('confetti-canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -375,8 +377,8 @@ function launchConfetti() {
       ctx.fillStyle=p.c; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);
       ctx.restore(); p.y+=p.s; p.a+=p.spin;
     });
-    if (++frame<260) requestAnimationFrame(draw);
-    else ctx.clearRect(0,0,canvas.width,canvas.height);
+    if (++frame<260) confettiAnimId = requestAnimationFrame(draw);
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); confettiAnimId = null; }
   })();
 }
 
