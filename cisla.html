@@ -93,7 +93,6 @@ body { width: 100%; max-width: 720px; }
 </style>
 </head>
 <body>
-<button id="back-btn" onclick="window.location.href='index.html'">← Zpět</button>
 <div id="game">
   <div id="header">
     <div id="level-info">Úroveň <span id="lv">1</span> / 10</div>
@@ -103,7 +102,7 @@ body { width: 100%; max-width: 720px; }
   <div id="msg">Přetáhni číslo <strong id="target-lbl">1</strong> na správné místo!</div>
   <div id="slots-area"></div>
   <div id="cards-area"></div>
-  <div id="btn-row"><button id="restart-btn">Začít znovu</button></div>
+  <div id="btn-row"><button id="restart-btn">Začít znovu</button> <button onclick="window.location.href='index.html'">Hlavní stránka</button></div>
 </div>
 <canvas id="confetti-canvas"></canvas>
 
@@ -186,15 +185,14 @@ function showFlash(type) {
   }, type === 'win' ? 4000 : 900);
 }
 
-let level = 1, score = 0, dragCard = null, touchCard = null, ghostEl = null, confettiAnimId = null;
+let level = 1, score = 0, dragCard = null, touchCard = null, ghostEl = null;
 
 function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
 
 function updateMsg() {
   const m = document.getElementById('msg');
   m.style.color = '#333';
-  if (level < 10) m.innerHTML = 'Přetáhni číslo <strong>' + level + '</strong> na správné místo!';
-  else m.innerHTML = 'Přetáhni <strong>všechna čísla</strong> na správná místa!';
+  if (level <= 10) m.innerHTML = 'Přetáhni číslo <strong>' + level + '</strong> na správné místo!';
   
 }
 
@@ -333,12 +331,10 @@ function onTouchEnd(e) {
 }
 
 document.getElementById('restart-btn').addEventListener('click', () => {
-  if (confettiAnimId) { cancelAnimationFrame(confettiAnimId); confettiAnimId = null; }
   level = 1; score = 0; document.getElementById('sc').textContent = 0; buildLevel();
 });
 
 function launchConfetti() {
-  if (confettiAnimId) { cancelAnimationFrame(confettiAnimId); confettiAnimId = null; }
   const canvas = document.getElementById('confetti-canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -355,8 +351,8 @@ function launchConfetti() {
       ctx.fillStyle=p.c; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r); ctx.restore();
       p.y+=p.s; p.a+=p.spin;
     });
-    if (++frame < 260) confettiAnimId = requestAnimationFrame(draw);
-    else { ctx.clearRect(0,0,canvas.width,canvas.height); confettiAnimId = null; }
+    if (++frame < 260) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
   })();
 }
 
