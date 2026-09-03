@@ -364,6 +364,14 @@ function showFlash(type){
 }
 
 let level=1,score=0,dragCard=null,touchCard=null,ghostEl=null;
+let nextLevelTimer=null,msgTimer=null;
+
+function clearGameTimers(){
+  clearTimeout(nextLevelTimer);
+  clearTimeout(msgTimer);
+  nextLevelTimer=null;
+  msgTimer=null;
+}
 function shuffle(arr){return arr.sort(()=>Math.random()-0.5);}
 
 function updateMsg(){
@@ -378,10 +386,12 @@ function updateMsg(){
 
 function setMsg(html){
   document.getElementById('msg').innerHTML=html;
-  setTimeout(()=>updateMsg(),1600);
+  clearTimeout(msgTimer);
+  msgTimer=setTimeout(()=>{msgTimer=null;updateMsg();},1600);
 }
 
 function buildLevel(){
+  clearGameTimers();
   document.getElementById('slots-area').innerHTML='';
   document.getElementById('cards-area').innerHTML='';
   document.getElementById('lv').textContent=level;
@@ -454,7 +464,10 @@ function checkPlace(card,slot){
     score++;
     document.getElementById('sc').textContent=score;
     playCorrect();showFlash('correct');
-    if(!document.querySelector('.card:not(.placed)'))setTimeout(nextLevel,600);
+    if(!document.querySelector('.card:not(.placed)')){
+      clearGameTimers();
+      nextLevelTimer=setTimeout(()=>{nextLevelTimer=null;nextLevel();},600);
+    }
     else setMsg(`${d.emoji} <strong style="color:${d.bg};-webkit-text-stroke:0.4px ${d.border}">${d.name}</strong> je na místě! Skvělá práce! 🎉`);
   } else {
     playWrong();showFlash('wrong');
@@ -523,6 +536,7 @@ document.addEventListener('touchcancel', cleanupTouch);
 window.addEventListener('blur', cleanupTouch);
 
 document.getElementById('restart-btn').addEventListener('click',()=>{
+  clearGameTimers();
   level=1;score=0;document.getElementById('sc').textContent=0;buildLevel();
 });
 

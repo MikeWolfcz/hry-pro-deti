@@ -186,6 +186,14 @@ function showFlash(type) {
 }
 
 let level = 1, score = 0, dragCard = null, touchCard = null, ghostEl = null;
+let nextLevelTimer = null, msgTimer = null;
+
+function clearGameTimers() {
+  clearTimeout(nextLevelTimer);
+  clearTimeout(msgTimer);
+  nextLevelTimer = null;
+  msgTimer = null;
+}
 
 function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
 
@@ -199,10 +207,12 @@ function updateMsg() {
 function setMsg(html, color) {
   const m = document.getElementById('msg');
   m.innerHTML = html; m.style.color = color;
-  setTimeout(() => updateMsg(), 1400);
+  clearTimeout(msgTimer);
+  msgTimer = setTimeout(() => { msgTimer = null; updateMsg(); }, 1400);
 }
 
 function buildLevel() {
+  clearGameTimers();
   document.getElementById('slots-area').innerHTML = '';
   document.getElementById('cards-area').innerHTML = '';
   document.getElementById('lv').textContent = level;
@@ -265,7 +275,10 @@ function checkPlace(card, slot) {
     score++;
     document.getElementById('sc').textContent = score;
     playCorrect(); showFlash("correct");
-    if (!document.querySelector('.card:not(.placed)')) setTimeout(nextLevel, 500);
+    if (!document.querySelector('.card:not(.placed)')) {
+      clearGameTimers();
+      nextLevelTimer = setTimeout(() => { nextLevelTimer = null; nextLevel(); }, 500);
+    }
     else setMsg('✓ Správně!', '#27ae60');
   } else {
     playWrong();   showFlash("wrong");
@@ -331,6 +344,7 @@ function onTouchEnd(e) {
 }
 
 document.getElementById('restart-btn').addEventListener('click', () => {
+  clearGameTimers();
   level = 1; score = 0; document.getElementById('sc').textContent = 0; buildLevel();
 });
 
